@@ -38,7 +38,7 @@ kubectl -n $NAMESPACE get secret $SECRET_NAME -o json | jq -r '.data["token"] | 
 kubectl -n $NAMESPACE get secret $SECRET_NAME -o json | jq -r '.data["ca.crt"] | @base64d' > ca.pem
 ```
 
-Also see [Example Playbooks](#example_playbooks).
+Also see [Example Playbooks](#example-playbooks).
 
 ## Role Variables
 
