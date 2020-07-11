@@ -1,0 +1,64 @@
+---
+# tasks file for kubeturbo
+- tempfile:
+    state: file
+  register: versionbump_tmp
+
+- name: "Install the version setting python script"
+  copy:
+    src: versionbump.py
+    dest: "{{ versionbump_tmp.path }}"
+
+- name: "Get the ConfigMap for kubeturbo"
+  k8s_info:
+    kind: ConfigMap
+    namespace: "{{ kubeturbo_namespace }}"
+    name: "{{ kubeturbo_configmap_name }}"
+
+    host: "{{ k8s_host | default (omit) }}"
+    api_key: "{{ k8s_api_key | default(omit) }}"
+  register: prod_conf
+
+- tempfile:
+    state: file
+  register: kubeturbo_config_tmp_file
+
+- name: "Write turbo-config to disk"
+  copy:
+    dest: "{{ kubeturbo_config_tmp_file.path }}"
+    content: "{{ prod_conf.resources[0].data['turbo.config'] }}"
+  when: prod_conf is defined
+
+- name: "Update version in turbo-config"
+  command: "{{ ansible_python_interpreter}} {{ versionbump_tmp.path}} {{ kubeturbo_config_tmp_file.path }} {{ kubeturbo_server_version }}"
+  when: prod_conf is defined
+
+- name: "Slurp updated turbo-config from disk"
+  slurp:
+    src: "{{ kubeturbo_config_tmp_file.path }}"
+  register: new_conf
+
+- name: "Update Kubeturbo"
+  block:
+  - name: "Patch ConfigMap"
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'configmappatch.yml') }}"
+
+      host: "{{ k8s_host | default (omit) }}"
+      api_key: "{{ k8s_api_key | default(omit) }}"
+    when: new_conf is defined
+    register: patched_configmap
+
+  - name: "Update Deployment"
+    k8s:
+      state: present
+      api_version: apps/v1
+      kind: Deployment
+      namespace: "{{ kubeturbo_namespace }}"
+      name: "{{ kubeturbo_deployment_name }}"
+      definition: "{{ lookup('template', 'deploymentpatch.yml') }}"
+
+      host: "{{ k8s_host | default (omit) }}"
+      api_key: "{{ k8s_api_key | default(omit) }}"
+    register: patched_deployment

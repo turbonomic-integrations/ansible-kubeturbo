@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  turbo.config: |-
+    {{ new_conf['content'] | b64decode | trim | indent }}
+kind: ConfigMap
+metadata:
+  name: {{ kubeturbo_configmap_name }}
+  namespace: {{ kubeturbo_namespace }}

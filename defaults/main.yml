@@ -1,0 +1,6 @@
+---
+# defaults file for kubeturbo
+kubeturbo_namespace: turbo
+kubeturbo_configmap_name: turbo-config
+kubeturbo_deployment_name: kubeturbo
+kubeturbo_config_tmp_file: /tmp/turbo.config.json

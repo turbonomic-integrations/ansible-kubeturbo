@@ -1,0 +1,13 @@
+spec:
+  template:
+    spec:
+{% if kubeturbo_pull_secrets is defined %}
+      imagePullSecrets:
+      - $patch: replace
+{% for pullsecret in kubeturbo_pull_secrets %}
+      - name: {{ pullsecret }}
+{% endfor %}
+{% endif %}
+      containers:
+        - name: kubeturbo
+          image: {{ kubeturbo_image }}
