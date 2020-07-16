@@ -48,6 +48,7 @@ Also see [Example Playbooks](#example-playbooks).
 |kubeturbo_image|The full tag of the kubeturbo docker image to use.|true|N/A|
 |kubeturbo_namespace|The namespace of the kubeturbo deployment|false|turbo|
 |kubeturbo_configmap_name|The name of the kubeturbo configmap|false|turbo-config|
+|kubeturbo_hanodeconfig|An array of Kubernetes node roles to consider for HA|false|N/A|
 |kubeturbo_deployment_name|The name of the kubeturbo deployment|false|kubeturbo|
 |kubeturbo_pull_secrets|An array of one or many secret names to be used by the deployment when pulling the kubeturbo image|false|N/A|
 |k8s_host|The hostname of the Kubernetes cluster|false|N/A|

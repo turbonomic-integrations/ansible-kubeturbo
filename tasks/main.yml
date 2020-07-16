@@ -30,7 +30,7 @@
   when: prod_conf is defined
 
 - name: "Update version in turbo-config"
-  command: "{{ ansible_python_interpreter}} {{ versionbump_tmp.path}} {{ kubeturbo_config_tmp_file.path }} {{ kubeturbo_server_version }}"
+  command: "{{ ansible_python_interpreter}} {{ versionbump_tmp.path}} {{ kubeturbo_config_tmp_file.path }} {{ kubeturbo_server_version }}{%if kubeturbo_hanodeconfig %} --hanodeconfig {{ kubeturbo_hanodeconfig | join(',') }}{% endif %}"
   when: prod_conf is defined
 
 - name: "Slurp updated turbo-config from disk"
